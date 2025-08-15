@@ -25,6 +25,16 @@ router.get("/db-test", async (req, res) => {
     console.log("Testing database connection...");
     console.log("Current connection state:", mongoose.connection.readyState);
     console.log("MONGODB_URI exists:", !!process.env.MONGODB_URI);
+    console.log("Environment variables check:");
+    console.log("- VERCEL:", !!process.env.VERCEL);
+    console.log("- NODE_ENV:", process.env.NODE_ENV);
+    
+    // Show partial URI for debugging (without credentials)
+    if (process.env.MONGODB_URI) {
+      const uri = process.env.MONGODB_URI;
+      const maskedUri = uri.substring(0, 20) + "***" + uri.substring(uri.lastIndexOf('@'));
+      console.log("- MONGODB_URI (masked):", maskedUri);
+    }
 
     if (mongoose.connection.readyState !== 1) {
       console.log("Attempting to connect to database...");
@@ -44,6 +54,8 @@ router.get("/db-test", async (req, res) => {
       connectionState: mongoose.connection.readyState,
       personaCount: count,
       mongoUri: process.env.MONGODB_URI ? "set" : "missing",
+      environment: process.env.VERCEL ? 'vercel' : 'local',
+      nodeEnv: process.env.NODE_ENV,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -56,6 +68,8 @@ router.get("/db-test", async (req, res) => {
         mongoose.connection.readyState === 1 ? "connected" : "disconnected",
       connectionState: mongoose.connection.readyState,
       mongoUri: process.env.MONGODB_URI ? "set" : "missing",
+      environment: process.env.VERCEL ? 'vercel' : 'local',
+      nodeEnv: process.env.NODE_ENV,
       timestamp: new Date().toISOString(),
     });
   }

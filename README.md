@@ -1,6 +1,6 @@
-# AI Persona Chat Backend
+# 🤖 AI Persona Chat Backend
 
-A Node.js backend application that creates AI-powered chat personas, featuring hardcoded tutors like Hitesh Choudhary and Piyush Garg, as well as custom persona creation capabilities.
+A powerful Node.js backend application that creates intelligent AI-powered chat personas. Features pre-built AI tutors like Hitesh Choudhary and Piyush Garg, along with the ability to create custom AI personas with unique personalities and expertise areas.
 
 ## 🏗️ Architecture
 
@@ -8,18 +8,35 @@ A Node.js backend application that creates AI-powered chat personas, featuring h
 - **Express.js Backend**: RESTful API with proper middleware setup
 - **MongoDB Integration**: Persistent data storage for personas and chat history
 - **OpenAI Integration**: Real AI-powered conversations using GPT models
+- **Serverless Ready**: Optimized for Vercel deployment with connection pooling
+
+![Screenshot](./asset/image.png)
 
 ## 📁 Project Structure
 
 ```
 ai-persona-chat-backend/
-├── config/          # Database configuration
-├── controllers/     # Business logic handlers
-├── models/          # MongoDB schemas
-├── personas/        # Hardcoded persona definitions
-├── routes/          # API route definitions
-├── services/        # External service integrations (OpenAI)
-└── index.js         # Main server entry point
+├── api/                 # Vercel serverless function entry point
+│   └── index.js        # Main API handler for serverless deployment
+├── config/             # Configuration files
+│   └── database.js     # MongoDB connection with pooling
+├── controllers/        # Business logic handlers
+│   └── chatController.js # Chat operations and persona management
+├── models/             # MongoDB schemas (Mongoose)
+│   ├── ChatHistory.js  # Chat conversation schema
+│   └── Persona.js      # AI persona schema
+├── personas/           # Pre-built persona definitions
+│   └── hardcoded.js    # Hitesh & Piyush persona configurations
+├── routes/             # API route definitions
+│   └── chatRoutes.js   # RESTful API endpoints
+├── services/           # External service integrations
+│   └── openaiService.js # OpenAI GPT integration
+├── .env.example        # Environment variables template
+├── .vercelignore       # Files to exclude from deployment
+├── index.js           # Main Express server entry point
+├── package.json       # Dependencies and scripts
+├── vercel.json        # Vercel deployment configuration
+└── README.md          # This documentation
 ```
 
 ## 🎯 Key Features
@@ -325,7 +342,7 @@ The application uses the following OpenAI configuration:
 
 ## 🚀 Deployment
 
-### Vercel Deployment 
+### Vercel Deployment
 
 This backend is configured for easy deployment on Vercel with serverless functions.
 
@@ -373,12 +390,13 @@ In your Vercel dashboard:
 1. Go to your project → Settings → Environment Variables
 2. Add the following variables:
 
-| Variable | Value | Environment |
-|----------|--------|-------------|
-| `MONGODB_URI` | Your MongoDB Atlas connection string | Production |
-| `OPENAI_API_KEY` | Your OpenAI API key | Production |
+| Variable         | Value                                | Environment |
+| ---------------- | ------------------------------------ | ----------- |
+| `MONGODB_URI`    | Your MongoDB Atlas connection string | Production  |
+| `OPENAI_API_KEY` | Your OpenAI API key                  | Production  |
 
 Example MongoDB Atlas URI:
+
 ```
 mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/ai-persona-chat?retryWrites=true&w=majority
 ```

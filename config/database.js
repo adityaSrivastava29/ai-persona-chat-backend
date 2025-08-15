@@ -11,15 +11,23 @@ const connectDB = async () => {
   }
 
   try {
-    const mongoUri = process.env.MONGODB_URI;
+    const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017/ai-persona-chat";
+    
+    if (!process.env.MONGODB_URI) {
+      console.warn("MONGODB_URI environment variable not found, using default");
+    }
 
     console.log("Attempting to connect to MongoDB...");
-    console.log("MongoDB URI (partial):", mongoUri.substring(0, 20) + "...");
+    console.log("MongoDB URI exists:", !!process.env.MONGODB_URI);
+    console.log("MongoDB URI (partial):", mongoUri.substring(0, 30) + "...");
+    console.log("Environment:", process.env.VERCEL ? 'vercel' : 'local');
 
     const conn = await mongoose.connect(mongoUri, {
       serverSelectionTimeoutMS: 10000, // 10 second timeout
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
+      retryWrites: true,
+      w: 'majority'
     });
 
     isConnected = true;
