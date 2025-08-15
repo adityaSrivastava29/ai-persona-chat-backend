@@ -49,10 +49,22 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Connect to MongoDB (don't wait for it to prevent function timeout)
-connectDB().catch(err => {
-  console.error("Database connection failed:", err);
-});
+// Connect to MongoDB (ensure connection for each request in serverless)
+const ensureDBConnection = async (req, res, next) => {
+  try {
+    if (require('mongoose').connection.readyState !== 1) {
+      console.log('Database not connected, attempting to connect...');
+      await connectDB();
+    }
+    next();
+  } catch (error) {
+    console.error('Database connection middleware error:', error);
+    next(); // Continue anyway, let the route handlers deal with it
+  }
+};
+
+// Use the middleware for API routes only
+app.use('/api', ensureDBConnection);
 
 // Use modular routes
 const chatRoutes = require("./routes/chatRoutes");
@@ -63,9 +75,8 @@ module.exports = app;
 
 // Only start server if not in Vercel environment
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-  const PORT = process.env.PORT || 0;
+  const PORT = process.env.PORT || 5001;
   const server = app.listen(PORT, () => {
-    const actualPort = server.address().port;
-    console.log(`AI Persona Chat Backend running on port ${actualPort}`);
+    console.log(`AI Persona Chat Backend running on port ${PORT}`);
   });
 }
