@@ -6,15 +6,37 @@ const connectDB = require("./config/database");
 
 const app = express();
 
-app.use(cors());
+// Enhanced CORS configuration
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'https://ai-persona-custom-chat-app-demo1-2cue6xzl9.vercel.app',
+    /\.vercel\.app$/
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - ${new Date().toISOString()}`);
+  next();
+});
 
 // Health check endpoint
 app.get("/", (req, res) => {
   res.json({ 
     message: "AI Persona Chat Backend is running", 
     status: "healthy",
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    mongoStatus: require('mongoose').connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
 
@@ -22,7 +44,8 @@ app.get("/api/health", (req, res) => {
   res.json({ 
     message: "API is working", 
     status: "healthy",
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    mongoStatus: require('mongoose').connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
 

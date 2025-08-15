@@ -202,13 +202,27 @@ exports.continueCustomPersonaChat = async (req, res) => {
 
 exports.getAllPersonas = async (req, res) => {
   try {
+    // Check MongoDB connection
+    if (mongoose.connection.readyState !== 1) {
+      console.error("MongoDB not connected");
+      return res.status(503).json({ 
+        error: "Database connection unavailable",
+        details: "MongoDB is not connected"
+      });
+    }
+
     const personas = await Persona.find().select(
       "name systemPrompt isHardcoded createdAt"
     );
+    
+    console.log(`Retrieved ${personas.length} personas`);
     res.json(personas);
   } catch (error) {
     console.error("Get personas error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ 
+      error: "Internal server error",
+      details: error.message
+    });
   }
 };
 
