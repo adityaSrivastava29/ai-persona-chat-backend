@@ -7,51 +7,56 @@ const mongoose = require("mongoose");
 
 // Debug route to test API access
 router.get("/test", (req, res) => {
-  res.json({ 
-    message: "API routes are working", 
+  res.json({
+    message: "API routes are working",
     timestamp: new Date().toISOString(),
-    mongoStatus: require('mongoose').connection.readyState === 1 ? 'connected' : 'disconnected'
+    mongoStatus:
+      require("mongoose").connection.readyState === 1
+        ? "connected"
+        : "disconnected",
   });
 });
 
 // Database connection test route
 router.get("/db-test", async (req, res) => {
   try {
-    const connectDB = require('../config/database');
-    
-    console.log('Testing database connection...');
-    console.log('Current connection state:', mongoose.connection.readyState);
-    console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
-    
+    const connectDB = require("../config/database");
+
+    console.log("Testing database connection...");
+    console.log("Current connection state:", mongoose.connection.readyState);
+    console.log("MONGODB_URI exists:", !!process.env.MONGODB_URI);
+
     if (mongoose.connection.readyState !== 1) {
-      console.log('Attempting to connect to database...');
+      console.log("Attempting to connect to database...");
       const result = await connectDB();
-      console.log('Connection result:', result);
+      console.log("Connection result:", result);
     }
-    
+
     // Try to perform a simple operation
-    const Persona = require('../models/Persona');
+    const Persona = require("../models/Persona");
     const count = await Persona.countDocuments();
-    
+
     res.json({
-      status: 'success',
-      message: 'Database connection test successful',
-      mongoStatus: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+      status: "success",
+      message: "Database connection test successful",
+      mongoStatus:
+        mongoose.connection.readyState === 1 ? "connected" : "disconnected",
       connectionState: mongoose.connection.readyState,
       personaCount: count,
-      mongoUri: process.env.MONGODB_URI ? 'set' : 'missing',
-      timestamp: new Date().toISOString()
+      mongoUri: process.env.MONGODB_URI ? "set" : "missing",
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Database test error:', error);
+    console.error("Database test error:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Database connection test failed',
+      status: "error",
+      message: "Database connection test failed",
       error: error.message,
-      mongoStatus: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+      mongoStatus:
+        mongoose.connection.readyState === 1 ? "connected" : "disconnected",
       connectionState: mongoose.connection.readyState,
-      mongoUri: process.env.MONGODB_URI ? 'set' : 'missing',
-      timestamp: new Date().toISOString()
+      mongoUri: process.env.MONGODB_URI ? "set" : "missing",
+      timestamp: new Date().toISOString(),
     });
   }
 });

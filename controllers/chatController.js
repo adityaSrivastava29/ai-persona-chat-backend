@@ -204,18 +204,21 @@ exports.getAllPersonas = async (req, res) => {
   try {
     // Check MongoDB connection
     if (mongoose.connection.readyState !== 1) {
-      console.error("MongoDB not connected, connection state:", mongoose.connection.readyState);
-      
+      console.error(
+        "MongoDB not connected, connection state:",
+        mongoose.connection.readyState
+      );
+
       // Try to reconnect
-      const connectDB = require('../config/database');
+      const connectDB = require("../config/database");
       const connected = await connectDB();
-      
+
       if (!connected) {
-        return res.status(503).json({ 
+        return res.status(503).json({
           error: "Database connection unavailable",
           details: "MongoDB is not connected and reconnection failed",
           mongoState: mongoose.connection.readyState,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
     }
@@ -223,16 +226,16 @@ exports.getAllPersonas = async (req, res) => {
     const personas = await Persona.find().select(
       "name systemPrompt isHardcoded createdAt"
     );
-    
+
     console.log(`Retrieved ${personas.length} personas`);
     res.json(personas);
   } catch (error) {
     console.error("Get personas error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Internal server error",
       details: error.message,
       mongoState: mongoose.connection.readyState,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 };
