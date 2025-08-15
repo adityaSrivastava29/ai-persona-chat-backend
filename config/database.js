@@ -22,7 +22,7 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 10000, // 10 second timeout
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
-      bufferCommands: false,
+      bufferCommands: true,  // Allow buffering during connection
       bufferMaxEntries: 0
     });
     
