@@ -7,9 +7,16 @@ const connectDB = async () => {
       process.env.MONGODB_URI || "mongodb://localhost:27017/ai-persona-chat"
     );
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+    return true;
   } catch (error) {
     console.error("MongoDB connection error:", error);
-    process.exit(1);
+    // Don't exit process in serverless environment
+    if (process.env.VERCEL) {
+      console.error("Running on Vercel - not exiting process");
+      return false;
+    } else {
+      process.exit(1);
+    }
   }
 };
 

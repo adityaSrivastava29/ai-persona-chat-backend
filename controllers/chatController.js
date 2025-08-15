@@ -9,6 +9,12 @@ const hardcodedPersonas = require("../personas/hardcoded");
 // Initialize hardcoded personas in database
 const initializeHardcodedPersonas = async () => {
   try {
+    // Check if mongoose is connected
+    if (mongoose.connection.readyState !== 1) {
+      console.log("MongoDB not connected, skipping persona initialization");
+      return;
+    }
+
     for (const [key, persona] of Object.entries(hardcodedPersonas)) {
       const existingPersona = await Persona.findOne({
         name: persona.name,
@@ -25,11 +31,14 @@ const initializeHardcodedPersonas = async () => {
     }
   } catch (error) {
     console.error("Error initializing hardcoded personas:", error);
+    // Don't throw error to prevent function crash
   }
 };
 
-// Call initialization
-initializeHardcodedPersonas();
+// Call initialization with delay to ensure MongoDB is connected
+setTimeout(() => {
+  initializeHardcodedPersonas();
+}, 1000);
 
 exports.chatWithPersona = async (req, res) => {
   try {
