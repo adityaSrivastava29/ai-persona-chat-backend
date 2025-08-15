@@ -36,7 +36,8 @@ app.get("/", (req, res) => {
     message: "AI Persona Chat Backend is running", 
     status: "healthy",
     timestamp: new Date().toISOString(),
-    mongoStatus: require('mongoose').connection.readyState === 1 ? 'connected' : 'disconnected'
+    mongoStatus: require('mongoose').connection.readyState === 1 ? 'connected' : 'disconnected',
+    environment: process.env.VERCEL ? 'vercel' : 'local'
   });
 });
 
@@ -45,9 +46,30 @@ app.get("/api/health", (req, res) => {
     message: "API is working", 
     status: "healthy",
     timestamp: new Date().toISOString(),
-    mongoStatus: require('mongoose').connection.readyState === 1 ? 'connected' : 'disconnected'
+    mongoStatus: require('mongoose').connection.readyState === 1 ? 'connected' : 'disconnected',
+    environment: process.env.VERCEL ? 'vercel' : 'local',
+    mongoUri: process.env.MONGODB_URI ? 'set' : 'missing',
+    openaiKey: process.env.OPENAI_API_KEY ? 'set' : 'missing'
   });
 });
+
+// Initialize database connection immediately (for serverless)
+let dbInitialized = false;
+const initializeDB = async () => {
+  if (!dbInitialized) {
+    console.log('Initializing database connection...');
+    try {
+      await connectDB();
+      dbInitialized = true;
+      console.log('Database initialization completed');
+    } catch (error) {
+      console.error('Database initialization failed:', error);
+    }
+  }
+};
+
+// Initialize DB on first load
+initializeDB();
 
 // Connect to MongoDB (ensure connection for each request in serverless)
 const ensureDBConnection = async (req, res, next) => {
