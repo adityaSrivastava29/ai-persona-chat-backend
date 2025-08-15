@@ -11,19 +11,15 @@ const connectDB = async () => {
   }
 
   try {
-    const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017/ai-persona-chat";
+    const mongoUri = process.env.MONGODB_URI;
     
     console.log('Attempting to connect to MongoDB...');
     console.log('MongoDB URI (partial):', mongoUri.substring(0, 20) + '...');
     
     const conn = await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 10000, // 10 second timeout
       socketTimeoutMS: 45000,
-      maxPoolSize: 10,
-      bufferCommands: true,  // Allow buffering during connection
-      bufferMaxEntries: 0
+      maxPoolSize: 10
     });
     
     isConnected = true;
